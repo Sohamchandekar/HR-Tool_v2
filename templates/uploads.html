@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            height: 100vh;
+            background-color: #343a40;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: white;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
+        .content {
+            padding: 20px;
+        }
+        .custom-file-upload {
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .custom-file-upload:hover {
+            background-color: #e9ecef;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .file-input {
+            display: none; /* Hide the default file input */
+        }
+        .upload-icon {
+            font-size: 16px;
+            margin-right: 8px;
+        }
+        .file-name {
+            margin-left: 10px;
+            font-weight: normal;
+            color: #007bff; /* Bootstrap primary color */
+        }
+        .success-icon {
+            color: green;
+            margin-left: 5px;
+            display: none; /* Initially hidden */
+        }
+        .holiday-list {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <nav class="sidebar col-md-2 d-none d-md-block bg-dark">
+            <div class="sidebar-sticky">
+                <h5 class="text-white text-center">Admin Menu</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('upload') }}">
+                            <i class="fas fa-upload"></i> Upload Data
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main" class="content col-md-9 ml-sm-auto col-lg-10 px-4">
+            <div class="container">
+                <h1 class="mt-5">Upload Data</h1>
+                <p>Use the form below to upload your biometric and HRONE files.</p>
+                <hr>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Upload Files</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" onsubmit="setHolidayString()">
+                            <div class="form-group">
+                                <label for="biometric_file">Biometric File (Excel or CSV)</label>
+                                <label class="custom-file-upload">
+                                    <input type="file" class="file-input" id="biometric_file" name="biometric_file" required onchange="updateFileName('biometric_file', 'biometric_file_name', 'biometric_file_success')">
+                                    <i class="fas fa-plus upload-icon"></i> Choose File
+                                    <span id="biometric_file_name" class="file-name"></span>
+                                    <i id="biometric_file_success" class="fas fa-check-circle success-icon"></i>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="hrone_file">HRONE File (Excel or CSV)</label>
+                                <label class="custom-file-upload">
+                                    <input type="file" class="file-input" id="hrone_file" name="hrone_file" required onchange="updateFileName('hrone_file', 'hrone_file_name', 'hrone_file_success')">
+                                    <i class="fas fa-plus upload-icon"></i> Choose File
+                                    <span id="hrone_file_name" class="file-name"></span>
+                                    <i id="hrone_file_success" class="fas fa-check-circle success-icon"></i>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="upload_month">Select Month</label>
+                                <select class="form-control" id="upload_month" name="upload_month" required>
+                                    <option value="">Select Month</option>
+                                    <option value="Jan">Jan</option>
+                                    <option value="Feb">Feb</option>
+                                    <option value="Mar">Mar</option>
+                                    <option value="Apr">Apr</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">Jun</option>
+                                    <option value="Jul">Jul</option>
+                                    <option value="Aug">Aug</option>
+                                    <option value="Sep">Sep</option>
+                                    <option value="Oct">Oct</option>
+                                    <option value="Nov">Nov</option>
+                                    <option value="Dec">Dec</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="upload_year">Select Year</label>
+                                <select class="form-control" id="upload_year" name="upload_year" required>
+                                    <option value="">Select Year</option>
+                                    {% for year in range(2000, 2031) %}
+                                        <option value="{{ year }}">{{ year }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="holiday_date">Select Holiday Date</label>
+                                <input type="date" class="form-control" id="holiday_date" name="holiday_date">
+                                <button type="button" class="btn btn-secondary mt-2" onclick="addHoliday()">Add Holiday</button>
+                            </div>
+                            <div class="holiday-list">
+                                <h5>Selected Holidays:</h5>
+                                <ul id="holiday_list" class="list-group"></ul>
+                            </div>
+                            <input type="hidden" id="holiday_string" name="holiday_string">
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-warning" role="alert">
+                            {{ messages[0] }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const holidays = [];
+
+        function updateFileName(inputId, displayId, successId) {
+            const input = document.getElementById(inputId);
+            const display = document.getElementById(displayId);
+            const successIcon = document.getElementById(successId);
+
+            // Check if a file has been selected
+            if (input.files.length > 0) {
+                // Display the name of the selected file
+                display.textContent = input.files[0].name;
+                // Show the success icon
+                successIcon.style.display = 'inline';
+            } else {
+                // Clear the display if no file is selected
+                display.textContent = '';
+                // Hide the success icon
+                successIcon.style.display = 'none';
+            }
+        }
+
+        function addHoliday() {
+            const holidayInput = document.getElementById('holiday_date');
+            const holidayList = document.getElementById('holiday_list');
+
+            if (holidayInput.value) {
+                const holidayDate = new Date(holidayInput.value);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = holidayDate.toLocaleDateString('en-US', options);
+
+                // Add to holidays array
+                holidays.push(formattedDate);
+
+                // Create a new list item
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.textContent = formattedDate;
+
+                // Create a delete button
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn btn-danger btn-sm';
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = function() {
+                    // Remove the holiday from the list and the array
+                    const index = holidays.indexOf(formattedDate);
+                    if (index > -1) {
+                        holidays.splice(index, 1);
+                    }
+                    holidayList.removeChild(listItem);
+                };
+
+                // Append the delete button to the list item
+                listItem.appendChild(deleteButton);
+
+                // Append to the holiday list
+                holidayList.appendChild(listItem);
+
+                // Clear the input
+                holidayInput.value = '';
+            } else {
+                alert('Please select a holiday date.');
+            }
+        }
+
+        function setHolidayString() {
+            // Convert holidays array to the desired format
+            const holidayString = holidays.map(date => `'${date}'`).join(', ');
+            document.getElementById('holiday_string').value = `[${holidayString}]`;
+        }
+    </script>
+</body>
+</html>

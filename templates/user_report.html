@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Reports</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_report.css') }}">
+</head>
+<body>
+
+    <!-- Top Right Buttons -->
+    <div class="top-right-buttons">
+        <!-- Go to Main Menu Button -->
+        <button class="icon-button" onclick="location.href='{{ url_for('home') }}'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-list" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+            </svg>
+        </button>
+
+        <!-- Download Report Button -->
+        <button class="icon-button" id="download-csv">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-file-earmark-arrow-down-fill" viewBox="0 0 16 16">
+              <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1m-1 4v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 11.293V7.5a.5.5 0 0 1 1 0"/>
+            </svg>
+        </button>
+
+        <!-- Logout Button -->
+        <button class="icon-button" onclick="location.href='{{ url_for('logout') }}'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="container-heading">
+        <h2 class="mt-5 text-center">Employee Attendance Report</h2>
+        <h4 class="mt-6 text-center">{{ upload_month }} {{ upload_year }}</h4>
+    </div>
+
+    <main role="main" class="content">
+
+        <!-- Responsive Table -->
+        <div class="table-container">
+            {{ report_html | safe }}
+        </div>
+
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('download-csv').addEventListener('click', function() {
+            const table = document.querySelector('.table-container table');
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const csvRows = [];
+
+            // Extract headers and add "Index" as the first header
+            const headers = ['Index', ...Array.from(rows[0].querySelectorAll('th')).map(th => th.innerText)];
+            csvRows.push(headers.join(','));
+
+            // Extract data with index
+            for (let i = 1; i < rows.length; i++) {
+                const row = Array.from(rows[i].querySelectorAll('td')).map(td => td.innerText.trim());
+                csvRows.push([i, ...row].join(','));
+            }
+
+            // Create a CSV file
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'attendance_report.csv');
+            a.click();
+
+            URL.revokeObjectURL(url);
+        });
+
+    </script>
+
+</body>
+</html>

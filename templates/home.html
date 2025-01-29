@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Tool</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+
+    <!-- Logout Icon (Top-Right) -->
+    <div class="logout-container">
+        <a href="{{ url_for('logout') }}" class="logout-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="black" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
+            </svg>
+        </a>
+    </div>
+
+    <main class="content">
+        <div class="container text-center">
+            <h1 class="mt-4">Hi, {{ user_name }}</h1>
+            <p class="welcome-text">Welcome to the HR Tool - Manage your HR tasks efficiently.</p>
+
+            <div class="row justify-content-center">
+                <!-- Dashboard Card -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/images/illust/dashboard.svg') }}" class="card-img-top" alt="Dashboard">
+                        <div class="card-body">
+                            <h5 class="card-title">View Dashboard</h5>
+                            <p class="card-text">Check employee stats, leave applications, and HR insights.</p>
+                            <a href="{{ url_for('user_dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Card -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/images/illust/report.svg') }}" class="card-img-top" alt="Reports">
+                        <div class="card-body">
+                            <h5 class="card-title">View Reports</h5>
+                            <p class="card-text">Analyze HR reports and employee performance data.</p>
+                            <a href="{{ url_for('user_report') }}" class="btn btn-primary">View Reports</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Product By</p>
+        <img src="{{ url_for('static', filename='/images/En_logo/en_full_blue.svg') }}" alt="Company Logo" class="footer-logo">
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

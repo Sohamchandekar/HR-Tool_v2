@@ -1,0 +1,62 @@
+/* Background gradient */
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-image: linear-gradient(45deg, #93a5cf 0%, #e4efe9 100%);
+}
+
+/* Centering the login box */
+.login-wrapper {
+    min-height: 80vh;
+    display: flex;
+}
+
+/* Login container styling */
+.login-container {
+    width: 420px;
+    padding: 30px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* Logo styling */
+.company-logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+/* Login heading */
+.login-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Button customization */
+.btn-primary {
+    background-color: #2575fc;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #6a11cb;
+}
+
+/* Footer styling */
+footer {
+    text-align: center;
+    padding: 15px;
+    color: white;
+}
+
+.footer-logo {
+    width: 150px;
+    height: 100px
+    margin-top: 5px;
+}

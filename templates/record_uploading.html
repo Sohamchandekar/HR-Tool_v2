@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Uploading</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Upload Records</h1>
+        <p class="text-center">Upload biometric and HRONE files, select month, year, and holidays.</p>
+        <div class="card p-4">
+            <form action="{{ url_for('record') }}" method="post">
+
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="biometric_file">Biometric File</label>
+                        <input type="file" class="form-control" id="biometric_file" name="biometric_file" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="hrone_file">HRONE File</label>
+                        <input type="file" class="form-control" id="hrone_file" name="hrone_file" required>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="upload_month">Select Month</label>
+                        <select class="form-control" id="upload_month" name="upload_month" required>
+                            <option value="">Select Month</option>
+                            <option value="Jan">January</option>
+                            <option value="Feb">February</option>
+                            <option value="Mar">March</option>
+                            <option value="Apr">April</option>
+                            <option value="May">May</option>
+                            <option value="Jun">June</option>
+                            <option value="Jul">July</option>
+                            <option value="Aug">August</option>
+                            <option value="Sep">September</option>
+                            <option value="Oct">October</option>
+                            <option value="Nov">November</option>
+                            <option value="Dec">December</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="upload_year">Select Year</label>
+                        <select class="form-control" id="upload_year" name="upload_year" required>
+                            <option value="">Select Year</option>
+                            {% for year in range(2000, 2031) %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label for="holiday_date">Select Holiday Date</label>
+                    <input type="date" class="form-control" id="holiday_date" name="holiday_date">
+                    <button type="button" class="btn btn-secondary mt-2" onclick="addHoliday()">Add Holiday</button>
+                </div>
+                <div class="holiday-list mt-3">
+                    <h5>Selected Holidays:</h5>
+                    <ul id="holiday_list" class="list-group"></ul>
+                </div>
+                <input type="hidden" id="holiday_string" name="holiday_string">
+                <button type="submit" class="btn btn-primary mt-4">Process & Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const holidays = [];
+        function addHoliday() {
+            const holidayInput = document.getElementById('holiday_date');
+            const holidayList = document.getElementById('holiday_list');
+
+            if (holidayInput.value) {
+                const holidayDate = new Date(holidayInput.value).toLocaleDateString('en-US');
+                holidays.push(holidayDate);
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = holidayDate;
+                holidayList.appendChild(listItem);
+                holidayInput.value = '';
+            }
+        }
+        function setHolidayString() {
+            document.getElementById('holiday_string').value = JSON.stringify(holidays);
+        }
+    </script>
+</body>
+</html>

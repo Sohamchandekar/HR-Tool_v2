@@ -1,0 +1,98 @@
+/* Background */
+body {
+    height: 100vh;
+    background: linear-gradient(45deg, #93a5cf 0%, #e4efe9 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+/* Logout Icon */
+.logout-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.logout-icon svg {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.logout-icon:hover svg {
+    transform: scale(1.1);
+}
+
+/* Content */
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: top;
+    text-align: center;
+    flex-grow: 1;
+}
+
+/* Welcome Text */
+.welcome-text {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+/* Cards */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 16px;
+    color: #555;
+}
+
+.btn-primary {
+    background-color: #2575fc;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #6a11cb;
+}
+
+/* Footer Styling */
+footer {
+    position: fixed;
+    bottom: 5px;
+    right: 20px;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    align-items: center; /* Center align text and image */
+    gap:1px; /* Reduce space between "Product By" text and logo */
+}
+
+.footer-logo {
+    width: 150px;
+    height: 100px; /* Maintain aspect ratio */
+}
