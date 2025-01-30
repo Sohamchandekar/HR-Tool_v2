@@ -1,9 +1,9 @@
 import pandas as pd
 from datetime import datetime, timedelta
 
-def create_employee_dict(csv_file):
+def create_employee_dict(excel_file):
     # Read the CSV file
-    df = pd.read_csv(csv_file, header=None)
+    df = pd.read_excel(excel_file, header=None)
     df = df.dropna(axis=1, how='all')
 
     # Initialize the dictionary to hold the final data
@@ -383,34 +383,40 @@ def calculate_latemark(employee_dict):
 
 
 def calculating_workingsundays(employee_dict):
-    for employee, data in employee_dict.items():
-        status_list = data['Status']  # Get the Status list
-        in_time_list = data['InTime']  # Get the InTime list
-        out_time_list = data['OutTime']  # Get the OutTime list
-        working_hours_list = data['dailyWorkingHours']  # Get the daily working hours list
+    """
+    This function calculates compensatory off based on working hours on Sundays.
+    If an employee works less than 6 hours, they receive 0.5 CompOff.
+    If they work 6 hours or more, they receive 1 CompOff.
+    """
 
-        # Initialize CompOffTotal if not already present
-        if 'CompOffTotal' not in data:
-            data['CompOffTotal'] = 0
+    six_hours = timedelta(hours=6)  # Convert 6 hours to timedelta
 
-        for i in range(len(status_list)):
-            if status_list[i] == 'WO':  # Check if the status is WO (Working Off)
-                if in_time_list[i] != 'NaT' and out_time_list[
-                    i] != 'NaT':  # Check if both InTime and OutTime are present
-                    working_hours = working_hours_list[i]  # Get the working hours for that day
+    def convert_to_timedelta(time_str):
+        """Convert HH:MM formatted string to timedelta object."""
+        try:
+            h, m = map(int, time_str.split(':'))  # Split HH:MM format
+            return timedelta(hours=h, minutes=m)
+        except ValueError:
+            print(f"Invalid time format: {time_str}")
+            return timedelta(0)  # Default to 0 if invalid
 
-                    if working_hours < 6:  # If working hours are less than 6
-                        data['CompOffTotal'] += 0.5
-                    else:  # If working hours are 6 or more
-                        data['CompOffTotal'] += 1
+    for emp_id, data in employee_dict.items():
+        in_time_list = data.get('InTime', [])
+        out_time_list = data.get('OutTime', [])
+        working_hours_list = data.get('WorkingHours', [])
 
-                    status_list[i] = 'WOP'  # Change the status to WOP (Working on a Weekend/Public Holiday)
+        for i in range(len(working_hours_list)):
+            if in_time_list[i] != 'NaT' and out_time_list[i] != 'NaT':
+                # Check if both InTime and OutTime are present
 
-        # Update the Status in the employee's data
-        data['Status'] = status_list
+                working_hours = convert_to_timedelta(working_hours_list[i])  # Convert to timedelta
+
+                if working_hours < six_hours:  # Compare with 6 hours
+                    data['CompOffTotal'] += 0.5
+                else:
+                    data['CompOffTotal'] += 1
 
     return employee_dict
-
 
 def calculate_metric(employee_dict):
     for employee, data in employee_dict.items():
