@@ -390,34 +390,48 @@ def calculating_workingsundays(employee_dict):
     If they work 6 hours or more, they receive 1 CompOff.
     """
 
-    six_hours = timedelta(hours=6)  # Convert 6 hours to timedelta
+    six_hours = timedelta(hours=6)  # 6-hour threshold
 
     def convert_to_timedelta(time_str):
         """Convert HH:MM formatted string to timedelta object."""
         try:
-            h, m = map(int, time_str.split(':'))  # Split HH:MM format
+            if time_str == "NaT":
+                return timedelta(0)  # Treat NaT as zero hours
+            h, m = map(int, time_str.split(':'))  # Convert HH:MM to hours & minutes
             return timedelta(hours=h, minutes=m)
         except ValueError:
-            print(f"Invalid time format: {time_str}")
-            return timedelta(0)  # Default to 0 if invalid
+            print(f"⚠ Invalid time format: {time_str}")  # Debugging log
+            return timedelta(0)  # Default to zero
 
     for emp_id, data in employee_dict.items():
+        status_list = data['Status']
         in_time_list = data.get('InTime', [])
         out_time_list = data.get('OutTime', [])
-        working_hours_list = data.get('WorkingHours', [])
+        working_hours_list = data.get('dailyWorkingHours', [])  # Changed to dailyWorkingHours
+        comp_off_total = data.get('CompOffTotal', 0)  # Initialize CompOffTotal
 
-        for i in range(len(working_hours_list)):
-            if in_time_list[i] != 'NaT' and out_time_list[i] != 'NaT':
-                # Check if both InTime and OutTime are present
+        for i in range(len(status_list)):
+            if status_list[i] == 'WO':  # Only process Week Off days
+                if in_time_list[i] != 'NaT' and out_time_list[i] != 'NaT':  
+                    # Employee has worked on Sunday
 
-                working_hours = convert_to_timedelta(working_hours_list[i])  # Convert to timedelta
+                    working_hours = convert_to_timedelta(working_hours_list[i])  # Convert to timedelta
 
-                if working_hours < six_hours:  # Compare with 6 hours
-                    data['CompOffTotal'] += 0.5
-                else:
-                    data['CompOffTotal'] += 1
+                    if working_hours > timedelta(0):  # Ensure working hours is valid
+                        if working_hours < six_hours:
+                            comp_off_total += 0.5
+                        else:
+                            comp_off_total += 1
+
+                        # ✅ Fix: Correctly update `Status` from `WO` to `WOP`
+                        status_list[i] = 'WOP'  
+
+        # ✅ Store the updated values back into the employee's dictionary
+        data['Status'] = status_list
+        data['CompOffTotal'] = comp_off_total
 
     return employee_dict
+
 
 def calculate_metric(employee_dict):
     for employee, data in employee_dict.items():
@@ -669,4 +683,42 @@ def finalAdjustment(employee_dict):
             data['generate_dataframe']['EmployeeTotalWorkingDay'] -= difference
 
     return employee_dict
+
+def sunday_wop_adjustment(employee_data):
+    """
+    Adjusts PayableOverTime for each employee by adding dailyWorkingHours for WOP (Work On Sunday) days.
+    
+    Args:
+        employee_data (dict): A dictionary containing employee records.
+        
+    Returns:
+        dict: The updated employee data with adjusted PayableOverTime.
+    """
+    for employee, data in employee_data.items():
+        # Extract required lists
+        status_list = data.get('Status', [])
+        working_hours_list = data.get('dailyWorkingHours', [])
+        
+        # Step 1: Identify WOP days and sum their hours
+        total_wop_hours = timedelta(0)  # Initialize total WOP hours
+
+        for i in range(len(status_list)):
+            if status_list[i] == 'WOP':  # Identify WOP days
+                wop_hours = convert_to_timedelta(working_hours_list[i])
+                total_wop_hours += wop_hours  # Accumulate WOP hours
+
+        # Step 2: Convert existing PayableOverTime to timedelta
+        payable_overtime_str = data["generate_dataframe"].get('PayableOverTime', '00:00')
+        
+        
+        current_payable_overtime = convert_to_timedelta(payable_overtime_str)
+
+        # Step 3: Add WOP hours to PayableOverTime
+        updated_payable_overtime = current_payable_overtime + total_wop_hours
+
+        # Step 4: Update the dictionary in HH:MM format
+        data["generate_dataframe"]['PayableOverTime'] = f"{updated_payable_overtime.seconds // 3600:02}:{(updated_payable_overtime.seconds % 3600) // 60:02}"
+
+    return employee_data
+
 
