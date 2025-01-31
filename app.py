@@ -18,7 +18,7 @@ from functions.biometric_functions import (create_employee_dict,
                                            calculate_metric,
                                            calculate_adjustment,
                                            half_day_map,
-                                           early_leave, finalAdjustment)
+                                           early_leave, finalAdjustment, sunday_wop_adjustment)
 
 from functions.hrone_functions import (process_employee_hroneData,
                                        dict_cleaning_hrone,
@@ -111,6 +111,7 @@ def home():
     employee_dict = early_leave(employee_dict)
     employee_dict=calculate_adjustment(employee_dict)
     employee_dict = finalAdjustment(employee_dict)
+    employee_dict = sunday_wop_adjustment(employee_dict)
 
 
     reportdataframe_data = {
