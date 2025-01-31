@@ -378,6 +378,7 @@ def calculate_latemark(employee_dict):
 
         # Store the lateMark in the employee's data
         data['lateMark'] = late_mark
+        data['lateMarkCount'] = data['lateMark'].count(1)
 
     return employee_dict
 
@@ -639,6 +640,7 @@ def calculate_adjustment(employee_dict):
             "EmployeeAverageWorkingHours": data["reportMetric"].get("EmployeeAverageWorkingHours", "0:00"),
             "EmployeeTotalWorkingHours": data["reportMetric"].get("EmployeeTotalWorkingHours", "0:00"),
             "EmployeeActualAbsentee": data["reportMetric"].get("EmployeeActualAbsentee", 0),
+            "EmployeeLateMarkCount": data.get('lateMarkCount', 0),
             "EmployeeLateMarksTotal": data.get("lateMarkAbsentee", 0),
             "EmployeeAbsenteeWithLateMark": data["reportMetric"].get("EmployeeAbsenteeWithLateMark", 0),
             "CompOffTotal": data.get("CompOffTotal", 0),
