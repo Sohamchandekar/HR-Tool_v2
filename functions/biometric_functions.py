@@ -684,6 +684,20 @@ def finalAdjustment(employee_dict):
 
     return employee_dict
 
+from datetime import timedelta
+
+def convert_to_timedelta(time_str):
+    """Convert HH:MM formatted string to timedelta object."""
+    if time_str == "NaT" or time_str is None:
+        return timedelta(0)  # Treat NaT as zero
+    try:
+        h, m = map(int, time_str.split(':'))
+        return timedelta(hours=h, minutes=m)
+    except ValueError:
+        print(f"⚠ Invalid time format: {time_str}")  # Debugging log
+        return timedelta(0)  # Default to zero
+
+
 def sunday_wop_adjustment(employee_data):
     """
     Adjusts PayableOverTime for each employee by adding dailyWorkingHours for WOP (Work On Sunday) days.
